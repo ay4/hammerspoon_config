@@ -53,6 +53,7 @@ function moveWin(cell, window)
 end
 
 hyper:bind({}, "w", function() hs.grid.maximizeWindow() end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "w", function() hs.grid.maximizeWindow() end)
 
 local messenger_top={
   x = 0,
@@ -78,6 +79,9 @@ local messenger_center={
 hyper:bind({}, "1", function() moveWin(messenger_top) end)
 hyper:bind({}, "2", function() moveWin(messenger_center) end)
 hyper:bind({}, "3", function() moveWin(messenger_bottom) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "1", function() moveWin(messenger_top) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "2", function() moveWin(messenger_center) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "3", function() moveWin(messenger_bottom) end)
 
 local global_center={
   x = 2,
@@ -87,6 +91,7 @@ local global_center={
 }
 
 hyper:bind({}, "s", function() moveWin(global_center) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "s", function() moveWin(global_center) end)
 
 local small_half_left={
   x = 2,
@@ -104,6 +109,8 @@ local small_half_right={
 
 hyper:bind({}, "left", function() moveWin(small_half_left) end)
 hyper:bind({}, "right", function() moveWin(small_half_right) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "left", function() moveWin(small_half_left) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "right", function() moveWin(small_half_right) end)
 
 local left_third={
   x = 0,
@@ -129,6 +136,9 @@ local right_third={
 hyper:bind({}, ",", function() moveWin(left_third) end)
 hyper:bind({}, ".", function() moveWin(mid_third) end)
 hyper:bind({}, "/", function() moveWin(right_third) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, ",", function() moveWin(left_third) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, ".", function() moveWin(mid_third) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "/", function() moveWin(right_third) end)
 
 local left_half={
   x = 0,
@@ -138,14 +148,16 @@ local left_half={
 }
 
 local right_half={
-  x = 7,
+  x = 6,
   y = 0,
   w = 6,
   h = 6
 }
 
 hyper:bind({}, "a", function() moveWin(left_half) end)
-hyper:bind({}, "s", function() moveWin(right_half) end)
+hyper:bind({}, "d", function() moveWin(right_half) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "a", function() moveWin(left_half) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "d", function() moveWin(right_half) end)
 
 local topleft_quarter={
   x = 0,
@@ -179,6 +191,10 @@ hyper:bind({}, "q", function() moveWin(topleft_quarter) end)
 hyper:bind({}, "z", function() moveWin(botleft_quarter) end)
 hyper:bind({}, "e", function() moveWin(topright_quarter) end)
 hyper:bind({}, "x", function() moveWin(botright_quarter) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "q", function() moveWin(topleft_quarter) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "z", function() moveWin(botleft_quarter) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "e", function() moveWin(topright_quarter) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "x", function() moveWin(botright_quarter) end)
 
 local files_top={
   x = 10,
@@ -196,3 +212,20 @@ local files_bottom={
 
 hyper:bind({}, "9", function() moveWin(files_top) end)
 hyper:bind({}, "0", function() moveWin(files_bottom) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "9", function() moveWin(files_top) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "0", function() moveWin(files_bottom) end)
+
+hs.hotkey.bind({"cmd"}, "M", function()
+  local currentapp=hs.application.frontmostApplication()
+  currentapp:hide()
+end)
+
+function applicationWatcher(appName, eventType, appObject)
+    if (eventType == hs.application.watcher.activated) then
+        if (appName == "Emacs") then
+           moveWin(global_center)
+        end
+    end
+end
+appWatcher = hs.application.watcher.new(applicationWatcher)
+appWatcher:start()
