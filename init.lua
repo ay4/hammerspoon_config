@@ -31,8 +31,8 @@ local useful_chars="abcdefghijklmnopqrstuvwxyz0123456789"
 for i=1, #useful_chars do
    local c = useful_chars:sub(i,i)
     hyper:bind({}, c, function()
-        hs.eventtap.event.newKeyEvent({"shift", "ctrl", "cmd"}, c, true):post()
-        hs.eventtap.event.newKeyEvent({"shift", "ctrl", "cmd"}, c, false):post()
+        hs.eventtap.event.newKeyEvent({"shift", "ctrl", "alt"}, c, true):post()
+        hs.eventtap.event.newKeyEvent({"shift", "ctrl", "alt"}, c, false):post()
     end)
 end
 
@@ -45,187 +45,141 @@ hs.hotkey.bind({"cmd","alt"}, 19, function()
     hs.keycodes.setLayout("Russian – PC")
 end)
 
-hs.grid.setGrid('12x6')
+hs.grid.setGrid('12x8')
 
-function moveWin(cell, window)
-   window = hs.window.focusedWindow()
-   hs.grid.set(window, cell, screen)
+ function moveWin(cell, window)
+    window = hs.window.focusedWindow()
+    hs.grid.set(window, cell, screen)
 end
 
-hyper:bind({}, "w", function() hs.grid.maximizeWindow() end)
 hs.hotkey.bind({"ctrl", "shift", "cmd"}, "w", function() hs.grid.maximizeWindow() end)
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "w", function() hs.grid.maximizeWindow() end)
 
-local messenger_top={
-  x = 0,
-  y = 0,
-  w = 2,
-  h = 3
+laptop_left_half={
+x = 0,
+y = 0,
+w = 6,
+h = 8
 }
 
-local messenger_bottom={
-  x = 0,
-  y = 3,
-  w = 2,
-  h = 3
+laptop_right_half={
+x = 6,
+y = 0,
+w = 6,
+h = 8
 }
 
-local messenger_center={
-  x = 0,
-  y = 1,
-  w = 2,
-  h = 4
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "a", function() moveWin(laptop_left_half) end)
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "d", function() moveWin(laptop_right_half) end)
+
+laptop_center={
+x = 2,
+y = 1,
+w = 9,
+h = 6
 }
 
-hyper:bind({}, "1", function() moveWin(messenger_top) end)
-hyper:bind({}, "2", function() moveWin(messenger_center) end)
-hyper:bind({}, "3", function() moveWin(messenger_bottom) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "1", function() moveWin(messenger_top) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "2", function() moveWin(messenger_center) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "3", function() moveWin(messenger_bottom) end)
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "s", function() moveWin(laptop_center) end)
 
-local global_center={
-  x = 2,
-  y = 1,
-  w = 8,
-  h = 4
+laptop_messenger_top={
+x = 0,
+y = 0,
+w = 2,
+h = 4
 }
 
-hyper:bind({}, "s", function() moveWin(global_center) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "s", function() moveWin(global_center) end)
-
-local small_half_left={
-  x = 2,
-  y = 1,
-  w = 4,
-  h = 4
+laptop_messenger_bottom={
+x = 0,
+y = 4,
+w = 2,
+h = 4
 }
 
-local small_half_right={
-  x = 6,
-  y = 1,
-  w = 4,
-  h = 4
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "q", function() moveWin(laptop_messenger_top) end)
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "z", function() moveWin(laptop_messenger_bottom) end)
+
+desktop_messenger_top={
+x = 0,
+y = 0,
+w = 2,
+h = 4
 }
 
-hyper:bind({}, "left", function() moveWin(small_half_left) end)
-hyper:bind({}, "right", function() moveWin(small_half_right) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "left", function() moveWin(small_half_left) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "right", function() moveWin(small_half_right) end)
-
-local left_third={
-  x = 0,
-  y = 0,
-  w = 4,
-  h = 6
+desktop_messenger_bottom={
+x = 0,
+y = 4,
+w = 2,
+h = 4
 }
 
-local mid_third={
-  x = 4,
-  y = 0,
-  w = 4,
-  h = 6
+
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "q", function() moveWin(desktop_messenger_top) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "z", function() moveWin(desktop_messenger_bottom) end)
+
+desktop_center_left={
+x = 2,
+y = 1,
+w = 4,
+h = 6
 }
 
-local right_third={
-  x = 8,
-  y = 0,
-  w = 4,
-  h = 6
+desktop_center_right={
+x = 6,
+y = 1,
+w = 4,
+h = 6
 }
 
-hyper:bind({}, ",", function() moveWin(left_third) end)
-hyper:bind({}, ".", function() moveWin(mid_third) end)
-hyper:bind({}, "/", function() moveWin(right_third) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, ",", function() moveWin(left_third) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, ".", function() moveWin(mid_third) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "/", function() moveWin(right_third) end)
-
-local left_half={
-  x = 0,
-  y = 0,
-  w = 6,
-  h = 6
+desktop_center_center={
+x = 3,
+y = 2,
+w = 6,
+h = 4
 }
 
-local right_half={
-  x = 6,
-  y = 0,
-  w = 6,
-  h = 6
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "a", function() moveWin(desktop_center_left) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "d", function() moveWin(desktop_center_right) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "s", function() moveWin(desktop_center_center) end)
+
+desktop_manager_top={
+x = 10,
+y = 0,
+w = 2,
+h = 4
 }
 
-hyper:bind({}, "a", function() moveWin(left_half) end)
-hyper:bind({}, "d", function() moveWin(right_half) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "a", function() moveWin(left_half) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "d", function() moveWin(right_half) end)
-
-local topleft_quarter={
-  x = 0,
-  y = 0,
-  w = 6,
-  h = 3
+desktop_manager_bottom={
+x = 10,
+y = 4,
+w = 2,
+h = 4
 }
 
-local botleft_quarter={
-  x = 0,
-  y = 3,
-  w = 6,
-  h = 3
+
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "e", function() moveWin(desktop_manager_top) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "x", function() moveWin(desktop_manager_bottom) end)
+
+desktop_keynote={
+x = 2,
+y = 0,
+w = 8,
+h = 8
 }
 
-local topright_quarter={
-  x = 6,
-  y = 0,
-  w = 6,
-  h = 3
+
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "k", function() moveWin(desktop_keynote) end)
+
+desktop_vertical={
+x = 4,
+y = 1,
+w = 4,
+h = 6
 }
 
-local botright_quarter={
-  x = 6,
-  y = 3,
-  w = 6,
-  h = 3
-}
 
-hyper:bind({}, "q", function() moveWin(topleft_quarter) end)
-hyper:bind({}, "z", function() moveWin(botleft_quarter) end)
-hyper:bind({}, "e", function() moveWin(topright_quarter) end)
-hyper:bind({}, "x", function() moveWin(botright_quarter) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "q", function() moveWin(topleft_quarter) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "z", function() moveWin(botleft_quarter) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "e", function() moveWin(topright_quarter) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "x", function() moveWin(botright_quarter) end)
-
-local files_top={
-  x = 10,
-  y = 0,
-  w = 2,
-  h = 3
-}
-
-local files_bottom={
-  x = 10,
-  y = 3,
-  w = 2,
-  h = 3
-}
-
-hyper:bind({}, "9", function() moveWin(files_top) end)
-hyper:bind({}, "0", function() moveWin(files_bottom) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "9", function() moveWin(files_top) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "0", function() moveWin(files_bottom) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "v", function() moveWin(desktop_vertical) end)
 
 hs.hotkey.bind({"cmd"}, "M", function()
   local currentapp=hs.application.frontmostApplication()
   currentapp:hide()
 end)
-
-function applicationWatcher(appName, eventType, appObject)
-    if (eventType == hs.application.watcher.activated) then
-        if (appName == "Emacs") then
-           moveWin(global_center)
-        end
-    end
-end
-appWatcher = hs.application.watcher.new(applicationWatcher)
-appWatcher:start()
