@@ -37,6 +37,21 @@ for i=1, #useful_chars do
     end)
 end
 
+    
+local function sendSystemKey(key)
+    hs.eventtap.event.newSystemKeyEvent(key, true):post()
+    hs.eventtap.event.newSystemKeyEvent(key, false):post()
+end
+
+local volume = {
+    up   = function() sendSystemKey("SOUND_UP") end,
+    down = function() sendSystemKey("SOUND_DOWN") end,
+    mute = function() sendSystemKey("MUTE") end,
+}
+hs.hotkey.bind({}, "f13", volume.mute)
+hs.hotkey.bind({}, "f14", volume.down, nil, volume.down)
+hs.hotkey.bind({}, "f15", volume.up, nil, volume.up)
+
 
 hs.hotkey.bind({"cmd","alt"} , 18, function()
     hs.keycodes.setLayout("ABC")
@@ -47,14 +62,6 @@ hs.hotkey.bind({"cmd","alt"}, 19, function()
     hs.keycodes.setLayout("Russian – PC")
 end)
 
-    function isLaptopScreen()
-    -- Get the current screen
-    local currentScreen = hs.screen.mainScreen()
-
-    -- Check the name of the screen (change "Color LCD" to the actual name of your laptop's screen)
-    return currentScreen:name() == "Built-in Retina Display"
-end
-
 hs.grid.setGrid('12x8')
 
  function moveWin(cell, window)
@@ -62,6 +69,7 @@ hs.grid.setGrid('12x8')
     hs.grid.set(window, cell, screen)
 end
 
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "w", function() hs.grid.maximizeWindow() end)
 hs.hotkey.bind({"ctrl", "shift", "alt"}, "w", function() hs.grid.maximizeWindow() end)
 
 
@@ -79,36 +87,8 @@ w = 6,
 h = 8
 }
 
-desktop_center_left={
-x = 2,
-y = 1,
-w = 4,
-h = 6
-}
-
-desktop_center_right={
-x = 6,
-y = 1,
-w = 4,
-h = 6
-}
-
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "a", function()
-    if isLaptopScreen() then
-        moveWin(laptop_left_half)
-    else
-        moveWin(desktop_center_left)
-    end
-end)
-
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "d", function()
-    if isLaptopScreen() then
-        moveWin(laptop_right_half)
-    else
-        moveWin(desktop_center_right)
-    end
-end)
-
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "a", function() moveWin(laptop_left_half) end)
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "d", function() moveWin(laptop_right_half) end)
 
 
 laptop_center={
@@ -118,34 +98,7 @@ w = 9,
 h = 6
 }
 
-desktop_center_center={
-x = 3,
-y = 2,
-w = 6,
-h = 4
-}
-
-desktop_keynote={
-x = 2,
-y = 0,
-w = 8,
-h = 8
-}
-
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "s", function()
-    if isLaptopScreen() then
-        moveWin(laptop_center)
-    else
-        moveWin(desktop_center_center)
-    end
-end)
-
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "k", function()
-    if not isLaptopScreen() then
-        moveWin(desktop_keynote)
-    end
-end)
-
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "s", function() moveWin(laptop_center) end)
 
 
 laptop_messenger_top={
@@ -162,6 +115,9 @@ w = 2,
 h = 4
 }
 
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "q", function() moveWin(laptop_messenger_top) end)
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "z", function() moveWin(laptop_messenger_bottom) end)
+
 desktop_messenger_top={
 x = 0,
 y = 0,
@@ -175,6 +131,37 @@ y = 4,
 w = 2,
 h = 4
 }
+
+
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "q", function() moveWin(desktop_messenger_top) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "z", function() moveWin(desktop_messenger_bottom) end)
+
+
+desktop_center_left={
+x = 2,
+y = 1,
+w = 4,
+h = 6
+}
+
+desktop_center_right={
+x = 6,
+y = 1,
+w = 4,
+h = 6
+}
+
+desktop_center_center={
+x = 3,
+y = 2,
+w = 6,
+h = 4
+}
+
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "a", function() moveWin(desktop_center_left) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "d", function() moveWin(desktop_center_right) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "s", function() moveWin(desktop_center_center) end)
+
 
 desktop_manager_top={
 x = 10,
@@ -190,34 +177,19 @@ w = 2,
 h = 4
 }
 
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "q", function()
-    if isLaptopScreen() then
-        moveWin(laptop_messenger_top)
-    else
-        moveWin(desktop_messenger_top)
-    end
-end)
 
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "z", function()
-    if isLaptopScreen() then
-        moveWin(laptop_messenger_bottom)
-    else
-        moveWin(desktop_messenger_bottom)
-    end
-end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "e", function() moveWin(desktop_manager_top) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "x", function() moveWin(desktop_manager_bottom) end)
 
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "e", function()
-    if not isLaptopScreen() then
-        moveWin(desktop_manager_top)
-    end
-end)
+desktop_keynote={
+x = 2,
+y = 0,
+w = 8,
+h = 8
+}
 
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "x", function()
-    if not isLaptopScreen() then
-        moveWin(desktop_manager_bottom)
-    end
-end)
 
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "k", function() moveWin(desktop_keynote) end)
 
 desktop_vertical={
 x = 4,
@@ -226,60 +198,8 @@ w = 4,
 h = 6
 }
 
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "v", function()
-    if not isLaptopScreen() then
-        moveWin(desktop_vertical)
-    end
-end)
 
-
--- Define window positions for the first, second, and third thirds of the laptop screen
-laptop_first_third = {
-    x = 0,
-    y = 0,
-    w = 4, -- Assuming a screen width of 12 units for simplicity
-    h = 8  -- Assuming full height
-}
-
-laptop_second_third = {
-    x = 4,
-    y = 0,
-    w = 4,
-    h = 8
-}
-
-laptop_third_third = {
-    x = 8,
-    y = 0,
-    w = 4,
-    h = 8
-}
-
--- Bind hotkeys for each third
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "1", function()
-    if isLaptopScreen() then
-        moveWin(laptop_first_third)
-    else
-        hs.alert.show("Not on the laptop screen!", 2)
-    end
-end)
-
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "2", function()
-    if isLaptopScreen() then
-        moveWin(laptop_second_third)
-    else
-        hs.alert.show("Not on the laptop screen!", 2)
-    end
-end)
-
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "3", function()
-    if isLaptopScreen() then
-        moveWin(laptop_third_third)
-    else
-        hs.alert.show("Not on the laptop screen!", 2)
-    end
-end)
-
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "v", function() moveWin(desktop_vertical) end)
 
 hs.hotkey.bind({"cmd"}, "M", function()
   local currentapp=hs.application.frontmostApplication()
