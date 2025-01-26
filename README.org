@@ -210,6 +210,25 @@ hs.hotkey.bind({"ctrl", "shift", "cmd"}, "q", function() moveWin(desktop_messeng
 hs.hotkey.bind({"ctrl", "shift", "cmd"}, "z", function() moveWin(desktop_messenger_bottom) end)
 #+end_src
 
+*** Tops
+    #+begin_src lua
+        desktop_top={
+        x = 2,
+        y = 0,
+        w = 8,
+        h = 1
+        }
+
+        desktop_bottom={
+        x = 2,
+        y = 7,
+        w = 8,
+        h = 1
+        }
+        hs.hotkey.bind({"ctrl", "shift", "cmd"}, "1", function() moveWin(desktop_top) end)
+        hs.hotkey.bind({"ctrl", "shift", "cmd"}, "2", function() moveWin(desktop_bottom) end)
+
+    #+end_src
 *** Centers
 #+begin_src lua
 

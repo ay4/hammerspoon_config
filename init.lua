@@ -37,7 +37,6 @@ for i=1, #useful_chars do
     end)
 end
 
-    
 local function sendSystemKey(key)
     hs.eventtap.event.newSystemKeyEvent(key, true):post()
     hs.eventtap.event.newSystemKeyEvent(key, false):post()
@@ -135,6 +134,23 @@ h = 4
 
 hs.hotkey.bind({"ctrl", "shift", "cmd"}, "q", function() moveWin(desktop_messenger_top) end)
 hs.hotkey.bind({"ctrl", "shift", "cmd"}, "z", function() moveWin(desktop_messenger_bottom) end)
+
+desktop_top={
+x = 2,
+y = 0,
+w = 8,
+h = 1
+}
+
+desktop_bottom={
+x = 2,
+y = 7,
+w = 8,
+h = 1
+}
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "1", function() moveWin(desktop_top) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "2", function() moveWin(desktop_bottom) end)
+
 
 
 desktop_center_left={
