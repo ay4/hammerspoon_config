@@ -122,6 +122,58 @@ hs.hotkey.bind({}, "f4", function()
 end)
 #+end_src    
 
+
+* Horizontal mouse scroll switches tabs
+    
+#+begin_src lua
+local eventtap = require("hs.eventtap")
+local keyStroke = eventtap.keyStroke
+local eventTypes = eventtap.event.types
+local eventProps = eventtap.event.properties
+
+-- tweakables:
+local cooldownSeconds = 0.25        -- how long to wait before allowing next tab switch
+local minHorizontalDelta = 2        -- how "hard" I have to scroll sideways
+                                     -- higher number = less sensitive
+
+local lastFired = 0
+
+local scrollTap = eventtap.new({ eventTypes.scrollWheel }, function(e)
+    -- read scroll deltas
+    local dx = e:getProperty(eventProps.scrollWheelEventDeltaAxis2) or 0 -- horizontal
+    local dy = e:getProperty(eventProps.scrollWheelEventDeltaAxis1) or 0 -- vertical
+
+    -- only react if horizontal is dominant AND big enough
+    if math.abs(dx) <= math.abs(dy) then
+        return false -- it's mostly vertical scrolling, ignore
+    end
+    if math.abs(dx) < minHorizontalDelta then
+        return false -- tiny accidental nudge, ignore
+    end
+
+    -- cooldown so we don't rapid-fire
+    local now = hs.timer.secondsSinceEpoch()
+    if now - lastFired < cooldownSeconds then
+        return true -- swallow during cooldown so it doesn't sideways-scroll either
+    end
+    lastFired = now
+
+    -- decide which tab direction
+    if dx > 0 then
+        -- scroll left -> previous tab
+        keyStroke({"cmd", "shift"}, "[", 0)
+    elseif dx < 0 then
+        -- scroll right -> next tab
+        keyStroke({"cmd", "shift"}, "]", 0)
+    end
+
+    -- swallow the original horizontal scroll so apps don't pan sideways
+    return true
+end)
+
+scrollTap:start()
+#+end_src   
+
 * Mail.app Hack
 We want backspace and delete to be remapped to Ctrl+Cmd+A (Archive) only within Mail.app because Apple is stupid.
 
