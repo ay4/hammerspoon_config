@@ -93,7 +93,7 @@ end)
 
 -- F9 -> Mail
 hs.hotkey.bind({}, "f9", function()
-    hs.application.launchOrFocus("Mail")
+    hs.application.launchOrFocus("Spark")
 end)
 
 -- F10 -> Safari
