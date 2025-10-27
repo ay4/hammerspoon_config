@@ -174,99 +174,7 @@ end)
 scrollTap:start()
 #+end_src   
 
-* Mail.app Hack
-We want backspace and delete to be remapped to Ctrl+Cmd+A (Archive) only within Mail.app because Apple is stupid.
 
-#+begin_src lua
-    local mailBundleID = "com.apple.mail"
-local ax = require("hs.axuielement")
-
--- We'll watch for both Backspace (aka "delete") and Forward Delete.
-local deleteKeys = {
-    [hs.keycodes.map.delete]        = true, -- keycode 51 (Backspace key)
-    [hs.keycodes.map.forwarddelete] = true, -- keycode 117 (Fn+Delete / Forward Delete)
-}
-
--- Returns true if the currently focused UI element in Mail is something editable
--- (compose text area, To:/Subject:, search field, etc.).
--- If you're in one of those, we should NOT hijack Delete.
-local function mailEditingText()
-    local frontApp = hs.application.frontmostApplication()
-    if not frontApp or frontApp:bundleID() ~= mailBundleID then
-        -- We only care about Mail here. If Mail isn't frontmost,
-        -- we treat this as "not editing text in Mail".
-        return false
-    end
-
-    local sysElem = ax.systemWideElement()
-    if not sysElem then return false end
-
-    local focusedElem = sysElem:attributeValue("AXFocusedUIElement")
-    if not focusedElem then return false end
-
-    -- Many editable things in Mail report AXEditable = true
-    -- (message body when composing, search field, etc.)
-    local editable = focusedElem:attributeValue("AXEditable")
-    if editable == true then
-        return true
-    end
-
-    -- Some fields (like To:/Cc: token fields) can be weird.
-    -- Fall back to checking the element role.
-    local role = focusedElem:attributeValue("AXRole")
-    if role == "AXTextField"
-        or role == "AXTextArea"
-        or role == "AXSearchField"
-        or role == "AXTokenField"
-    then
-        return true
-    end
-
-    return false
-end
-
--- Event tap callback. We decide whether to swallow the key and send Archive.
-local function handleMailDelete(ev)
-    -- Only care about keyDown events
-    if ev:getType() ~= hs.eventtap.event.types.keyDown then
-        return false
-    end
-
-    -- Only care about Delete / Forward Delete
-    local keyCode = ev:getKeyCode()
-    if not deleteKeys[keyCode] then
-        return false
-    end
-
-    -- Only act if Apple Mail is actually frontmost.
-    local frontApp = hs.application.frontmostApplication()
-    if not frontApp or frontApp:bundleID() ~= mailBundleID then
-        -- Mail is NOT the active app (maybe Alfred is up, or you're in Safari, etc.)
-        -- -> do nothing, let Delete behave normally.
-        return false
-    end
-
-    -- We're in Mail. If user's cursor is in a text field (compose window,
-    -- subject line, To:/Cc:, search box...), then DO NOT archive.
-    if mailEditingText() then
-        return false
-    end
-
-    -- Otherwise: intercept Delete and fire the Archive shortcut instead.
-    -- We aim Ctrl+Cmd+A at Mail (frontApp).
-    hs.eventtap.keyStroke({ "ctrl", "cmd" }, "a", 0, frontApp)
-
-    -- Swallow the original Delete so it doesn't also "Move to Trash".
-    return true
-end
-
--- Create and start the global event tap.
-local mailDeleteTap = hs.eventtap.new(
-    { hs.eventtap.event.types.keyDown },
-    handleMailDelete
-)
-mailDeleteTap:start()
-#+end_src
 
 * Volume Control
 On normal mechanical keyboard we want Home, Scroll Lock and Pause to act like Mute, Volume down and Volume up respectively.
@@ -285,6 +193,7 @@ hs.hotkey.bind({}, "f13", volume.mute)
 hs.hotkey.bind({}, "f14", volume.down, nil, volume.down)
 hs.hotkey.bind({}, "f15", volume.up, nil, volume.up)
 #+end_src
+
 * Switching layouts
 
 - Command+Shift+1 = English
