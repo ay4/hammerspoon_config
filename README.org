@@ -86,9 +86,9 @@ hs.hotkey.bind({}, "f7", function()
     hs.application.launchOrFocus("Telegram Lite")
 end)
 
--- F8 -> Amazing marvin
+-- F8 -> Open Obsidian TODO
 hs.hotkey.bind({}, "f8", function()
-    hs.application.launchOrFocus("Marvin")
+    hs.urlevent.openURL("obsidian://open?vault=neosidian&file=TODO")
 end)
 
 -- F9 -> Mail
