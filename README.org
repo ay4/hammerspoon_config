@@ -67,6 +67,113 @@ for i=1, #useful_chars do
 end
 #+end_src
 
+* F keys launchers
+Let's have F-keys launch some useful apps
+
+#+begin_src lua
+-- F5 -> Apple Calendar
+hs.hotkey.bind({}, "f5", function()
+    hs.application.launchOrFocus("Calendar")
+end)
+
+-- F6 -> Telegram
+hs.hotkey.bind({}, "f6", function()
+    hs.application.launchOrFocus("Telegram")
+end)
+
+-- F7 -> Telegram Lite
+hs.hotkey.bind({}, "f7", function()
+    hs.application.launchOrFocus("Telegram Lite")
+end)
+
+-- F8 -> Open Obsidian TODO
+hs.hotkey.bind({}, "f8", function()
+    hs.urlevent.openURL("obsidian://open?vault=neosidian&file=TODO")
+end)
+
+-- F9 -> Mail
+hs.hotkey.bind({}, "f9", function()
+    hs.application.launchOrFocus("Spark")
+end)
+
+-- F10 -> Safari
+hs.hotkey.bind({}, "f10", function()
+    hs.application.launchOrFocus("Safari")
+end)
+
+-- F11 -> Sublime
+hs.hotkey.bind({}, "f11", function()
+    hs.application.launchOrFocus("Sublime Text")
+end)
+
+-- F12 -> Warp
+hs.hotkey.bind({}, "f12", function()
+    hs.application.launchOrFocus("Warp")
+end)
+#+end_src
+
+* F4 closes an app
+Like retro good old times.
+#+begin_src lua
+-- F4 -> Cmd+Q (Quit frontmost app)
+hs.hotkey.bind({}, "f4", function()
+    -- Send Command+Q to the currently focused app
+    hs.eventtap.keyStroke({"cmd"}, "q")
+end)
+#+end_src    
+
+
+* Horizontal mouse scroll switches tabs
+    
+#+begin_src lua
+local eventtap = require("hs.eventtap")
+local keyStroke = eventtap.keyStroke
+local eventTypes = eventtap.event.types
+local eventProps = eventtap.event.properties
+
+-- tweakables:
+local cooldownSeconds = 0.25        -- how long to wait before allowing next tab switch
+local minHorizontalDelta = 2        -- how "hard" I have to scroll sideways
+                                     -- higher number = less sensitive
+
+local lastFired = 0
+
+local scrollTap = eventtap.new({ eventTypes.scrollWheel }, function(e)
+    -- read scroll deltas
+    local dx = e:getProperty(eventProps.scrollWheelEventDeltaAxis2) or 0 -- horizontal
+    local dy = e:getProperty(eventProps.scrollWheelEventDeltaAxis1) or 0 -- vertical
+
+    -- only react if horizontal is dominant AND big enough
+    if math.abs(dx) <= math.abs(dy) then
+        return false -- it's mostly vertical scrolling, ignore
+    end
+    if math.abs(dx) < minHorizontalDelta then
+        return false -- tiny accidental nudge, ignore
+    end
+
+    -- cooldown so we don't rapid-fire
+    local now = hs.timer.secondsSinceEpoch()
+    if now - lastFired < cooldownSeconds then
+        return true -- swallow during cooldown so it doesn't sideways-scroll either
+    end
+    lastFired = now
+
+    -- decide which tab direction
+    if dx > 0 then
+        -- scroll left -> previous tab
+        keyStroke({"cmd", "shift"}, "[", 0)
+    elseif dx < 0 then
+        -- scroll right -> next tab
+        keyStroke({"cmd", "shift"}, "]", 0)
+    end
+
+    -- swallow the original horizontal scroll so apps don't pan sideways
+    return true
+end)
+
+scrollTap:start()
+#+end_src   
+
 
 
 * Volume Control
@@ -86,6 +193,7 @@ hs.hotkey.bind({}, "f13", volume.mute)
 hs.hotkey.bind({}, "f14", volume.down, nil, volume.down)
 hs.hotkey.bind({}, "f15", volume.up, nil, volume.up)
 #+end_src
+
 * Switching layouts
 
 - Command+Shift+1 = English
@@ -315,6 +423,100 @@ hs.hotkey.bind({"cmd"}, "M", function()
   currentapp:hide()
 end)
 #+end_src
+
+* Close all apps fia cmd+F4
+#+begin_src lua
+local function quitAllNormalApps()
+    local running = hs.application.runningApplications()
+
+    for _, app in ipairs(running) do
+        local name = app:name() or ""
+
+        -- protect core stuff
+        if name ~= "Hammerspoon" and name ~= "Finder" then
+            -- treat "normal app" as: it currently has at least one normal window
+            local wins = app:allWindows() or {}
+
+            if #wins > 0 then
+                -- request a normal quit (not force kill -9)
+                app:kill()
+            end
+        end
+    end
+end
+
+-- Bind Cmd+F4 to quit everything
+hs.hotkey.bind({"cmd"}, "f4", quitAllNormalApps)
+#+end_src
+
+* Launch and position both messengers via cmd+f6
+#+begin_src lua
+-- helper to move a window to a given grid cell on its current screen
+function placeWindowInCell(cell, win)
+    win = win or hs.window.frontmostWindow()
+    if not win then return end
+
+    local scr = win:screen()
+    hs.grid.set(win, cell, scr)
+end
+
+-- grid cells for messenger layout
+local desktop_messenger_top = { x = 0, y = 0, w = 2, h = 4 }
+local desktop_messenger_bottom = { x = 0, y = 4, w = 2, h = 4 }
+
+-- launch/focus an app, wait for its main window to exist, then position it
+local function positionApp(appName, cell)
+    -- launch if needed / focus if already running
+    hs.application.launchOrFocus(appName)
+
+    local tries = 0
+    local pollTimer = nil
+
+    pollTimer = hs.timer.doEvery(0.2, function()
+        tries = tries + 1
+
+        local app = hs.appfinder.appFromName(appName)
+        if app then
+            local win = app:mainWindow()
+
+            if win then
+                win:unminimize()
+                win:raise()
+                placeWindowInCell(cell, win)
+
+                pollTimer:stop()
+                pollTimer = nil
+                return
+            end
+        end
+
+        -- give up after ~10 seconds (50 * 0.2s)
+        if tries > 50 then
+            pollTimer:stop()
+            pollTimer = nil
+        end
+    end)
+end
+
+-- main combo action: place Telegram + Telegram Lite
+local function arrangeMessengers()
+    positionApp("Telegram",      desktop_messenger_top)
+    positionApp("Telegram Lite", desktop_messenger_bottom)
+end
+
+-- hotkeys
+hs.hotkey.bind({"cmd"}, "f6", arrangeMessengers)
+
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "q", function()
+    placeWindowInCell(desktop_messenger_top)
+end)
+
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "z", function()
+    placeWindowInCell(desktop_messenger_bottom)
+end)
+
+#+end_src
+
 * Middle mouth scrolling (disabled)
 
 -- id of mouse wheel button
