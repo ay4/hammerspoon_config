@@ -23,7 +23,7 @@ hs.alert.show("Hammerspoon: Config Loaded")
 #+end_src
 
 * HYPER key
-On *laptop*, my CapsLock should serve as ctrl+option+shift. On the main keyboard, it's ctrl+cmd+shift which is needed for different window management on both. The main keyboard is condifgured via QMK.
+On *laptop*, my CapsLock should serve as ctrl+option+shift. On the main keyboard, it's ctrl+cmd+shift which is needed for different window management on both. The main keyboard is condifgured via QMK. *Importantly*, this only works if on main keyboard capslock is remapped via QMK, otherwise it's possible that this file thinks the desktop keyboard is the laptop keyboard.
 
 ** Dirty Mac Hack
 This line of code will remap capslock to F18 using an internal mac method. There's no other way to remap capslock unless one uses Karabiner.
