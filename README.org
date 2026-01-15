@@ -50,6 +50,19 @@ end
 hs.hotkey.bind({}, 'F18', hyper.pressed, hyper.released)
 #+end_src
 
+** Mode check
+Press hyper+/ to see which keyboard mode you're using.
+
+#+begin_src lua
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "/", function()
+    hs.alert.show("🖥️ LAPTOP mode (Ctrl+Shift+Alt)")
+end)
+
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "/", function()
+    hs.alert.show("⌨️ DESKTOP mode (Ctrl+Shift+Cmd)")
+end)
+#+end_src
+
 ** Dirty hack inside a modal
 We will now run a loop over a string called useful_chars and within this loop add each char to the hyper modal. The outcome of this will be that MacOS will perceive capslock+any of these chars and cmd+shift+ctrl+the same char. This will allow to set up casplock-based hotkeys in any native app.
 
@@ -293,6 +306,7 @@ h = 4
 
 hs.hotkey.bind({"ctrl", "shift", "alt"}, "q", function() moveWin(laptop_messenger_top) end)
 hs.hotkey.bind({"ctrl", "shift", "alt"}, "z", function() moveWin(laptop_messenger_bottom) end)
+hs.hotkey.bind({"ctrl", "shift", "alt"}, "c", function() moveWin(laptop_messenger_bottom) end)
 #+end_src
 
 
@@ -355,15 +369,23 @@ h = 6
 }
 
 desktop_center_center={
-x = 3,
-y = 2,
-w = 6,
-h = 4
+x = 4,
+y = 1,
+w = 4,
+h = 6
+}
+
+desktop_wide_center={
+x = 2,
+y = 0,
+w = 8,
+h = 8
 }
 
 hs.hotkey.bind({"ctrl", "shift", "cmd"}, "a", function() moveWin(desktop_center_left) end)
 hs.hotkey.bind({"ctrl", "shift", "cmd"}, "d", function() moveWin(desktop_center_right) end)
 hs.hotkey.bind({"ctrl", "shift", "cmd"}, "s", function() moveWin(desktop_center_center) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "w", function() moveWin(desktop_wide_center) end)
 
 #+end_src
 
@@ -386,6 +408,7 @@ h = 4
 
 hs.hotkey.bind({"ctrl", "shift", "cmd"}, "e", function() moveWin(desktop_manager_top) end)
 hs.hotkey.bind({"ctrl", "shift", "cmd"}, "x", function() moveWin(desktop_manager_bottom) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "c", function() moveWin(desktop_manager_bottom) end)
 #+end_src
 
 *** Keynote
@@ -411,7 +434,7 @@ h = 6
 }
 
 
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "v", function() moveWin(desktop_vertical) end)
+hs.hotkey.bind({"ctrl", "shift", "cmd"}, "v", function() moveWin(desktop_center_center) end)
 #+end_src
 
 * Hiding application
