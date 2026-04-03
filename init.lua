@@ -169,56 +169,6 @@ hs.grid.setGrid('12x8')
     hs.grid.set(window, cell, screen)
 end
 
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "w", function() hs.grid.maximizeWindow() end)
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "w", function() hs.grid.maximizeWindow() end)
-
-
-laptop_left_half={
-x = 0,
-y = 0,
-w = 6,
-h = 8
-}
-
-laptop_right_half={
-x = 6,
-y = 0,
-w = 6,
-h = 8
-}
-
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "a", function() moveWin(laptop_left_half) end)
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "d", function() moveWin(laptop_right_half) end)
-
-
-laptop_center={
-x = 2,
-y = 1,
-w = 9,
-h = 6
-}
-
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "s", function() moveWin(laptop_center) end)
-
-
-laptop_messenger_top={
-x = 0,
-y = 0,
-w = 2,
-h = 4
-}
-
-laptop_messenger_bottom={
-x = 0,
-y = 4,
-w = 2,
-h = 4
-}
-
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "q", function() moveWin(laptop_messenger_top) end)
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "z", function() moveWin(laptop_messenger_bottom) end)
-hs.hotkey.bind({"ctrl", "shift", "alt"}, "c", function() moveWin(laptop_messenger_bottom) end)
-
 desktop_messenger_top={
 x = 0,
 y = 0,
@@ -234,8 +184,8 @@ h = 4
 }
 
 
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "q", function() moveWin(desktop_messenger_top) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "z", function() moveWin(desktop_messenger_bottom) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "q", function() moveWin(desktop_messenger_top) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "z", function() moveWin(desktop_messenger_bottom) end)
 
 desktop_top={
 x = 2,
@@ -250,8 +200,8 @@ y = 7,
 w = 8,
 h = 1
 }
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "1", function() moveWin(desktop_top) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "2", function() moveWin(desktop_bottom) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "1", function() moveWin(desktop_top) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "2", function() moveWin(desktop_bottom) end)
 
 
 
@@ -283,10 +233,10 @@ w = 8,
 h = 8
 }
 
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "a", function() moveWin(desktop_center_left) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "d", function() moveWin(desktop_center_right) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "s", function() moveWin(desktop_center_center) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "w", function() moveWin(desktop_wide_center) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "a", function() moveWin(desktop_center_left) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "d", function() moveWin(desktop_center_right) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "s", function() moveWin(desktop_center_center) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "w", function() moveWin(desktop_wide_center) end)
 
 
 desktop_manager_top={
@@ -304,9 +254,9 @@ h = 4
 }
 
 
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "e", function() moveWin(desktop_manager_top) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "x", function() moveWin(desktop_manager_bottom) end)
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "c", function() moveWin(desktop_manager_bottom) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "e", function() moveWin(desktop_manager_top) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "x", function() moveWin(desktop_manager_bottom) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "c", function() moveWin(desktop_manager_bottom) end)
 
 desktop_keynote={
 x = 2,
@@ -316,7 +266,7 @@ h = 8
 }
 
 
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "k", function() moveWin(desktop_keynote) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "k", function() moveWin(desktop_keynote) end)
 
 desktop_vertical={
 x = 4,
@@ -326,7 +276,7 @@ h = 6
 }
 
 
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "v", function() moveWin(desktop_center_center) end)
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "v", function() moveWin(desktop_center_center) end)
 
 hs.hotkey.bind({"cmd"}, "M", function()
   local currentapp=hs.application.frontmostApplication()
@@ -410,12 +360,3 @@ end
 
 -- hotkeys
 hs.hotkey.bind({"cmd"}, "f6", arrangeMessengers)
-
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "q", function()
-    placeWindowInCell(desktop_messenger_top)
-end)
-
-hs.hotkey.bind({"ctrl", "shift", "cmd"}, "z", function()
-    placeWindowInCell(desktop_messenger_bottom)
-end)
-
