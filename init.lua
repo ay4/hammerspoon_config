@@ -360,3 +360,7 @@ end
 
 -- hotkeys
 hs.hotkey.bind({"cmd"}, "f6", arrangeMessengers)
+
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "return", function()
+    hs.application.launchOrFocus("Warp")
+end)
