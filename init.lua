@@ -89,7 +89,7 @@ end)
 
 hs.grid.setGrid('12x8')
 
-local LAPTOP_THRESHOLD = 1800
+local LAPTOP_THRESHOLD = 2000
 
 local function isLaptop()
     local win = hs.window.focusedWindow()
