@@ -35,6 +35,14 @@ local function move(cell, win)
     hs.grid.set(win, cell, win:screen())
 end
 
+local function windowAtPoint(point)
+    for _, win in ipairs(hs.window.orderedWindows()) do
+        if win:isVisible() and win:frame():containsPoint(point) then
+            return win
+        end
+    end
+end
+
 
 -- ── Grid cells ────────────────────────────────────────────────────────────────
 
@@ -207,3 +215,44 @@ hs.hotkey.bind({}, "f15", vol.up,   nil, vol.up)
 -- Layout switching: Cmd+Alt+1 = English, Cmd+Alt+2 = Russian
 hs.hotkey.bind({"cmd", "alt"}, 18, function() hs.keycodes.setLayout("ABC") end)
 hs.hotkey.bind({"cmd", "alt"}, 19, function() hs.keycodes.setLayout("Russian – PC") end)
+
+-- Middle mouse button: drag any window from anywhere
+-- Drag only activates after DRAG_THRESHOLD pixels so plain middle-clicks pass through.
+local DRAG_THRESHOLD = 5
+local drag = { win = nil, mousePt = nil, winPt = nil, active = false }
+
+local middleDragTap = eventtap.new({
+    eventTypes.otherMouseDown,
+    eventTypes.otherMouseDragged,
+    eventTypes.otherMouseUp,
+}, function(e)
+    if e:getProperty(eventProps.mouseEventButtonNumber) ~= 2 then return false end
+    local t = e:getType()
+
+    if t == eventTypes.otherMouseDown then
+        local pos = hs.mouse.absolutePosition()
+        drag.win     = windowAtPoint(pos)
+        drag.mousePt = pos
+        drag.winPt   = drag.win and drag.win:topLeft()
+        drag.active  = false
+        return false
+
+    elseif t == eventTypes.otherMouseDragged then
+        if not drag.win then return false end
+        local pos = hs.mouse.absolutePosition()
+        local dx, dy = pos.x - drag.mousePt.x, pos.y - drag.mousePt.y
+        if not drag.active then
+            if math.sqrt(dx*dx + dy*dy) < DRAG_THRESHOLD then return false end
+            drag.active = true
+        end
+        drag.win:setTopLeft({ x = drag.winPt.x + dx, y = drag.winPt.y + dy })
+        return true
+
+    elseif t == eventTypes.otherMouseUp then
+        local wasActive = drag.active
+        drag.win = nil
+        drag.active = false
+        return wasActive  -- swallow up only if we actually dragged
+    end
+end)
+middleDragTap:start()
