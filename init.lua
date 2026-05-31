@@ -146,8 +146,10 @@ local function musicControl(deezerMods, deezerKey, ytmMods, ytmKey)
 
     if deezer and #(deezer:allWindows() or {}) > 0 then
         app, mods, key = deezer, deezerMods, deezerKey
-    elseif ytm and #(ytm:allWindows() or {}) > 0 then
+    elseif ytm then
         app, mods, key = ytm, ytmMods, ytmKey
+    elseif deezer then
+        app, mods, key = deezer, deezerMods, deezerKey
     else
         hs.application.launchOrFocus("Deezer")
         return
