@@ -49,7 +49,7 @@ local cell = {
     desktop = {
         left       = { x = 2,  y = 1, w = 4, h = 6 },
         right      = { x = 6,  y = 1, w = 4, h = 6 },
-        center     = { x = 3,  y = 2, w = 6, h = 4 },
+        center     = { x = 2,  y = 1, w = 8, h = 6 },
         wide       = { x = 2,  y = 0, w = 8, h = 8 },
         top_bar    = { x = 2,  y = 0, w = 8, h = 1 },
         bottom_bar = { x = 2,  y = 7, w = 8, h = 1 },
