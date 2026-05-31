@@ -35,14 +35,6 @@ local function move(cell, win)
     hs.grid.set(win, cell, win:screen())
 end
 
-local function windowAtPoint(point)
-    for _, win in ipairs(hs.window.orderedWindows()) do
-        if win:isVisible() and win:frame():containsPoint(point) then
-            return win
-        end
-    end
-end
-
 
 -- ── Grid cells ────────────────────────────────────────────────────────────────
 
@@ -122,10 +114,56 @@ end)
 
 -- ── App launchers ─────────────────────────────────────────────────────────────
 
-hs.hotkey.bind({}, "f5",  function() hs.application.launchOrFocus("Calendar") end)
-hs.hotkey.bind({}, "f6",  function() hs.application.launchOrFocus("Telegram") end)
-hs.hotkey.bind({}, "f7",  function() hs.application.launchOrFocus("Telegram Lite") end)
--- f8–f12: unassigned
+local function toggleApp(name)
+    local app = hs.application.get(name)
+    if app and #(app:allWindows() or {}) > 0 then app:kill() else hs.application.launchOrFocus(name) end
+end
+
+hs.hotkey.bind({}, "f5", function() toggleApp("Calendar") end)
+hs.hotkey.bind({}, "f6", function() toggleApp("Telegram") end)
+hs.hotkey.bind({}, "f7", function() toggleApp("Telegram Lite") end)
+hs.hotkey.bind({}, "f8",  function() toggleApp("Spark") end)
+hs.hotkey.bind({}, "f9",  function() toggleApp("Deezer") end)
+hs.hotkey.bind({}, "f10", function() toggleApp("YouTube Music") end)
+
+hs.hotkey.bind({}, "f11", function()
+    hs.audiodevice.findOutputByName("ATH-M50xBT2"):setDefaultOutputDevice()
+    hs.audiodevice.findInputByName("ATH-M50xBT2"):setDefaultInputDevice()
+    hs.alert.show("🎧 ATH-M50xBT2")
+end)
+hs.hotkey.bind({}, "f12", function()
+    hs.audiodevice.findOutputByName("SSL 2+ Mk II"):setDefaultOutputDevice()
+    hs.alert.show("🎛️  SSL 2+ Mk II")
+end)
+
+-- F16/F17/F18: macropad prev/play/next — controls whichever music app has windows
+-- Deezer: Shift+Left / Space / Shift+Right
+-- YouTube Music: Shift+P / K / Shift+N
+local function musicControl(deezerMods, deezerKey, ytmMods, ytmKey)
+    local deezer = hs.application.get("Deezer")
+    local ytm    = hs.application.get("YouTube Music")
+    local app, mods, key
+
+    if deezer and #(deezer:allWindows() or {}) > 0 then
+        app, mods, key = deezer, deezerMods, deezerKey
+    elseif ytm and #(ytm:allWindows() or {}) > 0 then
+        app, mods, key = ytm, ytmMods, ytmKey
+    else
+        hs.application.launchOrFocus("Deezer")
+        return
+    end
+
+    local prev = hs.application.frontmostApplication()
+    app:activate()
+    hs.timer.doAfter(0.05, function()
+        hs.eventtap.keyStroke(mods, key)
+        if prev and prev:bundleID() ~= app:bundleID() then prev:activate() end
+    end)
+end
+
+hs.hotkey.bind({}, "f16", function() musicControl({"shift"}, "left",  {"shift"}, "p") end)
+hs.hotkey.bind({}, "f17", function() musicControl({}, "space", {}, "space") end)
+hs.hotkey.bind({}, "f18", function() musicControl({"shift"}, "right", {"shift"}, "n") end)
 
 -- F4: quit frontmost app
 hs.hotkey.bind({}, "f4", function()
@@ -181,6 +219,7 @@ end)
 local eventtap   = require("hs.eventtap")
 local eventTypes = eventtap.event.types
 local eventProps = eventtap.event.properties
+
 local lastScrollFired = 0
 local SCROLL_COOLDOWN  = 0.25
 local SCROLL_MIN_DELTA = 2
@@ -215,44 +254,3 @@ hs.hotkey.bind({}, "f15", vol.up,   nil, vol.up)
 -- Layout switching: Cmd+Alt+1 = English, Cmd+Alt+2 = Russian
 hs.hotkey.bind({"cmd", "alt"}, 18, function() hs.keycodes.setLayout("ABC") end)
 hs.hotkey.bind({"cmd", "alt"}, 19, function() hs.keycodes.setLayout("Russian – PC") end)
-
--- Middle mouse button: drag any window from anywhere
--- Drag only activates after DRAG_THRESHOLD pixels so plain middle-clicks pass through.
-local DRAG_THRESHOLD = 5
-local drag = { win = nil, mousePt = nil, winPt = nil, active = false }
-
-local middleDragTap = eventtap.new({
-    eventTypes.otherMouseDown,
-    eventTypes.otherMouseDragged,
-    eventTypes.otherMouseUp,
-}, function(e)
-    if e:getProperty(eventProps.mouseEventButtonNumber) ~= 2 then return false end
-    local t = e:getType()
-
-    if t == eventTypes.otherMouseDown then
-        local pos = hs.mouse.absolutePosition()
-        drag.win     = windowAtPoint(pos)
-        drag.mousePt = pos
-        drag.winPt   = drag.win and drag.win:topLeft()
-        drag.active  = false
-        return false
-
-    elseif t == eventTypes.otherMouseDragged then
-        if not drag.win then return false end
-        local pos = hs.mouse.absolutePosition()
-        local dx, dy = pos.x - drag.mousePt.x, pos.y - drag.mousePt.y
-        if not drag.active then
-            if math.sqrt(dx*dx + dy*dy) < DRAG_THRESHOLD then return false end
-            drag.active = true
-        end
-        drag.win:setTopLeft({ x = drag.winPt.x + dx, y = drag.winPt.y + dy })
-        return true
-
-    elseif t == eventTypes.otherMouseUp then
-        local wasActive = drag.active
-        drag.win = nil
-        drag.active = false
-        return wasActive  -- swallow up only if we actually dragged
-    end
-end)
-middleDragTap:start()

@@ -33,9 +33,17 @@ CapsLock acts as **Hyper** (Ctrl+Opt+Cmd) via the Hyperkey app. All window manag
 
 | Key | Action |
 |-----|--------|
-| F5 | Calendar |
-| F6 | Telegram |
-| F7 | Telegram Lite |
+| F5 | Toggle Calendar |
+| F6 | Toggle Telegram |
+| F7 | Toggle Telegram Lite |
+| F8 | Toggle Spark |
+| F9 | Toggle Deezer |
+| F10 | Toggle YouTube Music |
+| F11 | Audio: ATH-M50xBT2 (output + input) |
+| F12 | Audio: SSL 2+ Mk II (output) |
+| F16 | Music: previous track |
+| F17 | Music: play/pause (launches Deezer if neither is open) |
+| F18 | Music: next track |
 | Cmd+F6 | Launch & position both Telegram apps |
 | F4 | Quit frontmost app |
 | Cmd+F4 | Quit all apps with windows |
