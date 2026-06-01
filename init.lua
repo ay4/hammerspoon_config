@@ -133,6 +133,7 @@ hs.hotkey.bind({}, "f11", function()
 end)
 hs.hotkey.bind({}, "f12", function()
     hs.audiodevice.findOutputByName("SSL 2+ Mk II"):setDefaultOutputDevice()
+    hs.audiodevice.findInputByName("C922 Pro Stream Webcam"):setDefaultInputDevice()
     hs.alert.show("🎛️  SSL 2+ Mk II")
 end)
 
