@@ -8,7 +8,9 @@ local function reloadConfig(files)
     end
 end
 hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig):start()
-hs.alert.show("Config loaded")
+hs.notify.new({ title = "Hammerspoon", informativeText = "Config loaded" }):send()
+
+hs.hotkey.bind(HYPER, "r", function() hs.reload() end)
 
 
 -- ── Constants ─────────────────────────────────────────────────────────────────
@@ -115,7 +117,7 @@ end)
 -- ── App launchers ─────────────────────────────────────────────────────────────
 
 local function toggleApp(name)
-    local app = hs.application.get(name)
+    local app = hs.application.find(name, true)
     if app and #(app:allWindows() or {}) > 0 then app:kill() else hs.application.launchOrFocus(name) end
 end
 
