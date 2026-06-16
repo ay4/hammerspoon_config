@@ -10,13 +10,12 @@ end
 hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig):start()
 hs.notify.new({ title = "Hammerspoon", informativeText = "Config loaded" }):send()
 
-hs.hotkey.bind(HYPER, "r", function() hs.reload() end)
-
-
 -- ── Constants ─────────────────────────────────────────────────────────────────
 
 -- CapsLock is remapped to Ctrl+Opt+Cmd by the Hyperkey app.
 local HYPER = {"ctrl", "alt", "cmd"}
+
+hs.hotkey.bind(HYPER, "r", function() hs.reload() end)
 
 -- Screens narrower than this (logical points) are treated as the laptop screen.
 -- MacBook Pro reports 1920px; external monitors are typically 2560px+.
